@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>JPL Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="gate" style="max-width:420px;margin:60px auto;padding:16px">
+  <div class="card center">
+    <h2 style="color:var(--gold)" data-t="🔒 JPL एडमिन|🔒 JPL Admin"></h2>
+    <p style="color:var(--mut)" data-t="केवल टूर्नामेंट एडमिन के लिए। Google से लॉगिन करें।|Restricted to the Tournament Admin. Sign in with Google."></p>
+    <button class="pri" id="gBtn" data-t="🔵 Google से लॉगिन|🔵 Sign in with Google"></button>
+    <div class="hdrBtns"><button class="langBtn"></button></div>
+    <div id="gMsg"></div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+<header style="padding:8px 12px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+  <div><h1 style="font-size:19px">🏏 JPL Admin</h1><small id="who" style="color:var(--mut)"></small></div>
+  <div><button class="langBtn"></button> <button class="hbtn" id="logout" data-t="लॉगआउट|Logout"></button></div>
+</header>
+<nav>
+  <button class="langBtn"></button>
+  <button class="on" data-tab="tPlayers" data-t="खिलाड़ी|Players"></button>
+  <button data-tab="tAuction" data-t="ऑक्शन|Auction"></button>
+  <button data-tab="tScore" data-t="स्कोरिंग|Scoring"></button>
+  <button data-tab="tMatches" data-t="मैच/शेड्यूल|Matches"></button>
+  <button data-tab="tTeams" data-t="टीमें|Teams"></button>
+  <button data-tab="tMedia" data-t="मीडिया/स्पॉन्सर|Media & Sponsors"></button>
+  <button data-tab="tSettings" data-t="सेटिंग्स|Settings"></button>
+  <button data-tab="tScan" data-t="QR स्कैनर|QR Scanner"></button>
+</nav>
+<main>
+
+<!-- PLAYERS -->
+<section id="tPlayers" class="on">
+  <div class="card">
+    <div class="noprint"><button class="sm" id="csvBtn" data-t="⬇️ Excel/CSV|⬇️ Export Excel/CSV"></button> <button class="sm" id="printBtn" data-t="🖨️ ऑक्शन शीट (PDF)|🖨️ Auction Sheet (PDF)"></button></div>
+    <h3 style="margin-top:10px" data-t="रजिस्टर्ड खिलाड़ी|Registered Players"></h3>
+    <div id="pStats"></div>
+    <select id="pFilter" style="margin:8px 0"><option value="" data-t="सभी|All"></option><option value="pending" data-t="पेंडिंग|Pending"></option><option value="paid" data-t="अप्रूव्ड (Paid)|Approved (Paid)"></option><option value="rejected" data-t="रिजेक्टेड|Rejected"></option></select>
+    <div class="tw"><table id="plTbl"></table></div>
+  </div>
+  <div class="card noprint">
+    <h3 data-t="खिलाड़ी एडिट / स्टैट्स|Edit Player / Stats"></h3>
+    <select id="sPlayer"></select>
+    <div class="row"><div><label data-t="रोल|Role"></label><select id="sRole"><option value="bat" data-t="बल्लेबाज|Batter"></option><option value="bowl" data-t="गेंदबाज|Bowler"></option><option value="all" data-t="ऑलराउंडर|All-rounder"></option></select></div>
+      <div><label data-t="टीम|Team"></label><select id="sTeam"></select></div></div>
+    <label data-t="गाँव|Village"></label><input id="sVillage">
+    <div class="row3"><div><label data-t="मैच|Matches"></label><input id="sMatches" type="number" min="0"></div><div><label data-t="रन (पुराने)|Runs (manual)"></label><input id="sRuns" type="number" min="0"></div><div><label data-t="गेंदें|Balls"></label><input id="sBalls" type="number" min="0"></div></div>
+    <div class="row3"><div><label data-t="विकेट|Wickets"></label><input id="sWkts" type="number" min="0"></div><div><label data-t="ओवर|Overs"></label><input id="sOvers" type="number" min="0" step="0.1"></div><div><label data-t="दिए रन|Runs Given"></label><input id="sRunsGiven" type="number" min="0"></div></div>
+    <button class="pri" id="sSaveP" data-t="सेव करें|Save"></button><div id="sMsg"></div>
+  </div>
+</section>
+
+<!-- AUCTION -->
+<section id="tAuction">
+  <div class="card">
+    <h3 data-t="ऑक्शन सिस्टम|Auction System"></h3>
+    <div id="aucState" style="font-size:20px;font-weight:700"></div>
+    <button class="pri" id="aucToggle"></button>
+    <p style="color:var(--mut);font-size:13px" data-t="बंद करने पर पब्लिक स्क्रीन पर 'ऑक्शन बंद' दिखेगा और बोली नहीं लग पाएगी। डेटा सुरक्षित रहता है।|When OFF, the public screen shows 'Auction closed' and bidding is blocked. Data stays safe."></p>
+  </div>
+  <div class="card">
+    <h3 data-t="खिलाड़ी चुनें|Select Player"></h3>
+    <div id="aCounts" style="color:var(--mut)"></div>
+    <select id="aPool"></select>
+    <div class="btns"><button class="sm" id="aStart" data-t="▶ नीलामी शुरू|▶ Start Bidding"></button><button class="sm" id="aRandom" data-t="🎲 रैंडम अगला|🎲 Random Next"></button><button class="sm" id="aReauc" data-t="♻️ अनबिके दोबारा|♻️ Re-Auction Unsold"></button><button class="sm" id="aClear" data-t="स्क्रीन साफ|Clear Screen"></button></div>
+  </div>
+  <div class="card" id="aCtlCard"><div id="aCtl"></div></div>
+</section>
+
+<!-- SCORING -->
+<section id="tScore">
+  <div class="card">
+    <h3 data-t="बॉल-बाय-बॉल स्कोरिंग|Ball-by-Ball Scoring"></h3>
+    <div class="row"><div><label data-t="मैच|Match"></label><select id="scMatch"></select></div><div><label data-t="पारी|Innings"></label><select id="scInn"><option value="1" data-t="पहली पारी|1st Innings"></option><option value="2" data-t="दूसरी पारी|2nd Innings"></option></select></div></div>
+    <div class="row"><div><label data-t="बैटिंग टीम|Batting Team"></label><select id="scBat"></select></div><div><label data-t="स्ट्राइकर|Striker"></label><select id="scBatter"></select></div></div>
+    <div class="row"><div><label data-t="गेंदबाज|Bowler"></label><select id="scBowler"></select></div><div><label data-t="आउट का तरीका|Dismissal"></label><select id="scDis"><option value="bowled" data-t="बोल्ड|Bowled"></option><option value="caught" data-t="कैच आउट|Caught"></option><option value="lbw" data-t="एलबीडब्ल्यू|LBW"></option><option value="runout" data-t="रन आउट|Run Out"></option><option value="stumped" data-t="स्टंप्ड|Stumped"></option><option value="hitwicket" data-t="हिट विकेट|Hit Wicket"></option></select></div></div>
+    <label data-t="नोट (वैकल्पिक)|Note (optional)"></label><input id="scNote">
+    <div class="btns" id="scBtns"><button data-r="0">0</button><button data-r="1">1</button><button data-r="2">2</button><button data-r="3">3</button><button data-r="4">4</button><button data-r="6">6</button><button data-x="wd">WD</button><button data-x="nb">NB</button><button data-w="1" class="bad">OUT</button></div>
+    <div class="btns"><button class="sm" id="scUndo" data-t="↩️ आखिरी बॉल हटाएं|↩️ Undo Last Ball"></button><button class="sm ok" id="scFinish" data-t="🏁 मैच खत्म करें|🏁 Finish Match"></button></div>
+    <div id="scInfo" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<!-- MATCHES -->
+<section id="tMatches">
+  <div class="card">
+    <h3 data-t="⚙️ शेड्यूल जनरेटर (लीग + सेमी + फाइनल)|⚙️ Schedule Generator (League + Semis + Final)"></h3>
+    <label data-t="टीमें चुनें|Select Teams"></label><div id="genTeams"></div>
+    <div class="row3"><div><label data-t="पहला मैच (तारीख/समय)|First match (date/time)"></label><input id="genStart" type="datetime-local"></div><div><label data-t="मैचों के बीच घंटे|Hours between matches"></label><input id="genGap" type="number" value="2" min="0.5" step="0.5"></div><div><label data-t="ओवर प्रति पारी|Overs per innings"></label><input id="genOvers" type="number" min="1"></div></div>
+    <div class="row"><div><label data-t="ग्राउंड|Ground"></label><select id="genGround"></select></div><div><label><input type="checkbox" id="genSemi" checked> <span data-t="सेमी-फाइनल + फाइनल जोड़ें|Add Semi-Finals + Final"></span></label></div></div>
+    <button class="pri" id="genBtn" data-t="प्रीव्यू बनाएं|Generate Preview"></button>
+    <div id="genPreview"></div>
+  </div>
+  <div class="card">
+    <h3 data-t="सभी मैच|All Matches"></h3>
+    <div class="btns"><button class="sm" id="fillSemi" data-t="सेमी-फाइनल टीमें भरें (पॉइंट्स से)|Fill Semi-Finals (from points)"></button><button class="sm" id="fillFinal" data-t="फाइनल टीमें भरें|Fill Final"></button><button class="sm bad" id="mDelAll" data-t="सभी मैच हटाएं|Delete All Matches"></button></div>
+    <div id="mList"></div>
+  </div>
+</section>
+
+<!-- TEAMS -->
+<section id="tTeams">
+  <div class="card">
+    <h3 data-t="नई टीम बनाएं|Create Team"></h3>
+    <div class="row"><div><label data-t="टीम का नाम *|Team Name *"></label><input id="tmName"></div><div><label data-t="कप्तान|Captain"></label><input id="tmCap"></div></div>
+    <div class="row"><div><label data-t="कोच|Coach"></label><select id="tmCoach"></select></div><div><label data-t="मालिक का नाम|Owner Name"></label><input id="tmOwnerName"></div></div>
+    <div class="row"><div><label data-t="मालिक का Gmail (लॉगिन के लिए)|Owner Gmail (for login)"></label><input id="tmOwner" type="email"></div><div><label data-t="पर्स (₹)|Purse (₹)"></label><input id="tmPurse" type="number"></div></div>
+    <label data-t="टीम लोगो|Team Logo"></label><input id="tmLogo" type="file" accept="image/*">
+    <button class="pri" id="tmAdd" data-t="टीम बनाएं|Create Team"></button>
+  </div>
+  <div class="card"><h3 data-t="टीमें|Teams"></h3><div id="tmList"></div></div>
+</section>
+
+<!-- MEDIA -->
+<section id="tMedia">
+  <div class="card">
+    <h3 data-t="🤝 स्पॉन्सर मैनेजर|🤝 Sponsors Manager"></h3>
+    <div class="row3"><div><label data-t="नाम|Name"></label><input id="spName"></div><div><label data-t="प्रकार|Tier"></label><select id="spTier"><option value="title" data-t="टाइटल स्पॉन्सर|Title Sponsor"></option><option value="co" data-t="को-स्पॉन्सर|Co-Sponsor"></option></select></div><div><label data-t="लोगो|Logo"></label><input id="spLogo" type="file" accept="image/*"></div></div>
+    <button class="sm" id="spAdd" data-t="जोड़ें|Add"></button><div id="spList"></div>
+  </div>
+  <div class="card">
+    <h3 data-t="📰 ब्रेकिंग न्यूज़ टिकर|📰 Breaking News Ticker"></h3>
+    <div class="row"><input id="nwText"><button class="sm" id="nwAdd" data-t="जोड़ें|Add"></button></div><div id="nwList"></div>
+  </div>
+  <div class="card">
+    <h3 data-t="🎯 पोल|🎯 Polls"></h3>
+    <label data-t="सवाल|Question"></label><input id="pQ"><label data-t="विकल्प (कॉमा से अलग)|Options (comma separated)"></label><input id="pOpts">
+    <button class="sm" id="pAdd" data-t="पोल जोड़ें|Add Poll"></button><div id="pList"></div>
+  </div>
+  <div class="card">
+    <h3 data-t="🖼️ गैलरी मॉडरेशन|🖼️ Gallery Moderation"></h3>
+    <h4 data-t="मंज़ूरी का इंतज़ार|Pending Approval"></h4><div id="gPending"></div>
+    <h4 data-t="अप्रूव्ड|Approved"></h4><div id="gApproved"></div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="tSettings">
+  <div class="card">
+    <h3 data-t="टूर्नामेंट सेटिंग्स|Tournament Settings"></h3>
+    <div class="row3"><div><label data-t="एंट्री फीस (₹)|Entry Fee (₹)"></label><input id="setEntry" type="number"></div><div><label>UPI ID</label><input id="setUpi"></div><div><label data-t="UPI पर नाम|UPI Payee Name"></label><input id="setUpiName"></div></div>
+    <div class="row"><div><label data-t="पेमेंट QR इमेज (वैकल्पिक)|Payment QR image (optional)"></label><input id="setQr" type="file" accept="image/*"></div><div><label data-t="एडमिन WhatsApp (91 के साथ)|Admin WhatsApp (with 91)"></label><input id="setWa"></div></div>
+    <div class="row3"><div><label data-t="शुरू होने की तारीख|Start Date"></label><input id="setDate" type="date"></div><div><label data-t="डिफ़ॉल्ट पर्स (₹)|Default Purse (₹)"></label><input id="setPurse" type="number"></div><div><label data-t="बेस प्राइस (₹)|Base Price (₹)"></label><input id="setBase" type="number"></div></div>
+    <div class="row3"><div><label data-t="स्क्वाड साइज़|Squad Size"></label><input id="setSquad" type="number"></div><div><label data-t="डिफ़ॉल्ट ओवर|Default Overs"></label><input id="setOvers" type="number"></div><div><label data-t="विकेट सीमा (ऑल आउट)|Wickets limit (all out)"></label><input id="setWk" type="number"></div></div>
+    <button class="pri" id="setSave" data-t="सेटिंग्स सेव करें|Save Settings"></button><div id="setMsg"></div>
+  </div>
+  <div class="card"><h3 data-t="ग्राउंड|Grounds"></h3>
+    <div class="row"><div><label data-t="नाम|Name"></label><input id="gName"></div><div><label data-t="पता|Address"></label><input id="gAddr"></div></div>
+    <button class="sm" id="gAdd" data-t="जोड़ें|Add"></button><button class="sm" id="gDefault" data-t="पोरसा + जोताई ग्राउंड जोड़ें|Add Porsa + Jotai Grounds"></button><div id="gList"></div></div>
+  <div class="card"><h3 data-t="कोच|Coaches"></h3>
+    <div class="row"><div><label data-t="नाम|Name"></label><input id="cName"></div><div><label data-t="मोबाइल|Mobile"></label><input id="cPhone"></div></div>
+    <button class="sm" id="cAdd" data-t="जोड़ें|Add"></button><button class="sm" id="cSubodh" data-t="सुबोध को कोच जोड़ें|Add Subodh as Coach"></button><div id="cList"></div></div>
+</section>
+
+<!-- SCANNER -->
+<section id="tScan">
+  <div class="card">
+    <h3 data-t="QR स्कैनर / मैनुअल वेरिफिकेशन|QR Scanner / Manual Verify"></h3>
+    <div class="row"><input id="scanId" data-tp="खिलाड़ी ID डालें (JPL-XXXXX)|Enter Player ID (JPL-XXXXX)"><button class="sm" id="scanManual" data-t="चेक करें|Check"></button></div>
+    <video id="scanVid" playsinline style="width:100%;max-width:360px;border-radius:10px;background:#000;margin-top:10px"></video>
+    <div class="btns"><button class="sm" id="scanStart" data-t="📷 कैमरा शुरू|📷 Start Camera"></button><button class="sm" id="scanStop" data-t="बंद करें|Stop"></button></div>
+    <div id="scanRes"></div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="card" id="modalBody"></div></div>
+
+<script type="module">
+import { S, startData, $, esc, tr, applyLang, onLang, toggleLang, db, auth, doc, setDoc, addDoc, collection, updateDoc, deleteDoc, writeBatch, increment, serverTimestamp,
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, ADMIN_EMAIL, cfg, pidOf, rupee, fmtWhen, oversOf, compress, roleLabel, roleKey, teamName, teamOf, logo,
+  teamLabel, innings, scoreStr, liveInfo, computeResult, resultText, commentary, randomCmi, chipsHTML, stageLabel, dismissalLabel, standings, approved, keepSel,
+  enableSound, gavel, confetti, drawMatchPoster, downloadCanvas, shareCanvas } from "./common.js";
+
+let tab = "tPlayers", started = false, selTeam = "", genPlan = [];
+const L = () => doc(db, "auctions", "live");
+const ps = p => p.payStatus || "pending";
+const delDoc = async (c, id) => { if (confirm(tr("हटाएं?", "Delete?"))) await deleteDoc(doc(db, c, id)); };
+const openModal = h => { $("modalBody").innerHTML = h; $("modal").classList.add("on"); };
+$("modal").onclick = e => { if (e.target === $("modal")) $("modal").classList.remove("on"); };
+
+// ---------- auth lock ----------
+document.querySelectorAll(".langBtn").forEach(b => b.onclick = toggleLang);
+onLang(() => { render(); });
+$("gBtn").onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(e => $("gMsg").innerHTML = `<div class="msg">❌ ${esc(e.code || e.message)}</div>`);
+$("logout").onclick = () => signOut(auth);
+onAuthStateChanged(auth, async u => {
+  if (u && ((u.email || "").toLowerCase() !== ADMIN_EMAIL || !u.emailVerified)) {
+    alert(tr("अनधिकृत एक्सेस - केवल टूर्नामेंट एडमिन के लिए", "Unauthorized Access - Restricted to Tournament Admin"));
+    await signOut(auth); location.href = "index.html"; return;
+  }
+  $("gate").classList.toggle("hidden", !!u); $("app").classList.toggle("hidden", !u);
+  if (u) { $("who").textContent = u.email; if (!started) { started = true; startData(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); }, true); } }
+});
+let raf = 0;
+document.querySelectorAll("nav [data-tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav [data-tab]").forEach(x => x.classList.remove("on")); document.querySelectorAll("section").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); tab = b.dataset.tab; $(tab).classList.add("on"); render();
+});
+function render() {
+  if (!started) return;
+  ({ tPlayers: renderPlayers, tAuction: renderAuc, tScore: renderScore, tMatches: renderMatches, tTeams: renderTeams, tMedia: renderMedia, tSettings: renderSettings, tScan: () => { } })[tab]();
+  applyLang();
+}
+
+// ================= PLAYERS =================
+const tagOf = s => s === "paid" ? `<span class="tag paid">${tr("Paid ✔", "Paid ✔")}</span>` : s === "rejected" ? `<span class="tag rej">${tr("रिजेक्ट", "Rejected")}</span>` : `<span class="tag pend">${tr("पेंडिंग", "Pending")}</span>`;
+function renderPlayers() {
+  const all = S.players, cnt = k => all.filter(p => ps(p) === k).length;
+  $("pStats").innerHTML = `<div class="stats"><div><b>${cnt("pending")}</b><small>${tr("पेंडिंग", "Pending")}</small></div><div><b>${cnt("paid")}</b><small>${tr("अप्रूव्ड", "Approved")}</small></div><div><b>${cnt("rejected")}</b><small>${tr("रिजेक्टेड", "Rejected")}</small></div></div>`;
+  const f = $("pFilter").value, list = all.filter(p => !f || ps(p) === f);
+  $("plTbl").innerHTML = `<tr><th></th><th>${tr("नाम", "Name")}</th><th>${tr("रोल/टीम", "Role/Team")}</th><th>${tr("मोबाइल", "Mobile")}</th><th>${tr("स्टेटस", "Status")}</th><th>${tr("एक्शन", "Actions")}</th></tr>` + list.map(p => {
+    const pr = S.priv[p.id] || {}, wa = pr.mobile ? `https://wa.me/91${pr.mobile}?text=${encodeURIComponent(`बधाई हो ${p.name}! आपका मिनी JPL रजिस्ट्रेशन कन्फर्म हो गया है। / Congratulations ${p.name}! Your Mini JPL registration is confirmed. ID: ${pidOf(p.id)}`)}` : "";
+    return `<tr><td><img class="th" src="${p.photo}" data-img="${p.id}"></td><td>${esc(p.name)}<br><small>${pidOf(p.id)} • ${p.age} • ${esc(p.village || "")}</small></td><td>${roleLabel(p.role)}<br><small>${esc(p.teamName || "—")}</small></td>
+    <td>${esc(pr.mobile || "")}</td><td>${tagOf(ps(p))}</td><td><button class="sm" data-shot="${p.id}">${tr("स्क्रीनशॉट देखें", "View Screenshot")}</button>
+    <button class="sm ok" data-appr="${p.id}">${tr("Approve (Paid)", "Approve (Mark Paid)")}</button><button class="sm bad" data-rej="${p.id}">${tr("Reject", "Reject")}</button>
+    ${wa ? `<a href="${wa}" target="_blank"><button class="sm wa">📩</button></a>` : ""}<button class="sm" data-del="${p.id}">🗑</button></td></tr>`; }).join("");
+  keepSel("sPlayer", S.players.map(p => `<option value="${p.id}">${esc(p.name)} (${pidOf(p.id)})</option>`).join(""));
+  keepSel("sTeam", `<option value="">—</option>` + S.teams.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join(""));
+  if (!$("sRuns").dataset.f) { fillStats(); $("sRuns").dataset.f = 1; }
+}
+$("pFilter").onchange = renderPlayers;
+$("plTbl").onclick = async e => {
+  const g = a => e.target.closest(`[${a}]`)?.getAttribute(a);
+  if (g("data-img")) { openModal(`<img class="big" src="${S.players.find(x => x.id === g("data-img")).photo}">`); }
+  else if (g("data-shot")) { const id = g("data-shot"), s = S.priv[id]?.shot; openModal(`<h3>${esc(S.players.find(x => x.id === id)?.name)}</h3>${s ? `<img class="big" src="${s}">` : "—"}<div class="row"><button class="pri ok" id="mAp">${tr("Approve (Mark Paid)", "Approve (Mark Paid)")}</button><button class="pri bad" id="mRj">${tr("Reject", "Reject")}</button></div>`); $("mAp").onclick = () => { approve(id); $("modal").classList.remove("on"); }; $("mRj").onclick = () => { reject(id); $("modal").classList.remove("on"); }; }
+  else if (g("data-appr")) approve(g("data-appr")); else if (g("data-rej")) reject(g("data-rej"));
+  else if (g("data-del")) { const id = g("data-del"); if (confirm(tr("खिलाड़ी हटाएं?", "Delete player?"))) { await deleteDoc(doc(db, "players", id)); await deleteDoc(doc(db, "private_players", id)); } }
+};
+async function approve(id) { const p = S.players.find(x => x.id === id), b = writeBatch(db);
+  b.update(doc(db, "players", id), { payStatus: "paid", auctionStatus: p.teamId ? "sold" : "pool" }); b.update(doc(db, "private_players", id), { status: "paid" }); await b.commit(); }
+async function reject(id) { const b = writeBatch(db); b.update(doc(db, "players", id), { payStatus: "rejected", auctionStatus: "" }); b.update(doc(db, "private_players", id), { status: "rejected" }); await b.commit(); }
+function fillStats() { const p = S.players.find(x => x.id === $("sPlayer").value); if (!p) return;
+  $("sRole").value = roleKey(p.role); $("sTeam").value = p.teamId || ""; $("sVillage").value = p.village || "";
+  $("sMatches").value = p.matches || 0; $("sRuns").value = p.runs || 0; $("sBalls").value = p.balls || 0; $("sWkts").value = p.wkts || 0; $("sOvers").value = p.overs || 0; $("sRunsGiven").value = p.runsGiven || 0; }
+$("sPlayer").onchange = fillStats;
+$("sSaveP").onclick = async () => { const id = $("sPlayer").value; if (!id) return; const t = teamOf($("sTeam").value);
+  await updateDoc(doc(db, "players", id), { role: $("sRole").value, teamId: $("sTeam").value, teamName: t ? t.name : "", village: $("sVillage").value.trim(), matches: +$("sMatches").value || 0, runs: +$("sRuns").value || 0, balls: +$("sBalls").value || 0, wkts: +$("sWkts").value || 0, overs: +$("sOvers").value || 0, runsGiven: +$("sRunsGiven").value || 0 });
+  $("sMsg").innerHTML = `<div class="msg">✅ ${tr("सेव हो गया", "Saved")}</div>`; };
+$("csvBtn").onclick = () => {
+  const rows = [["ID", "Name", "Age", "Village", "Role", "Team", "Sold Price", "Mobile", "T-Shirt", "Status"]].concat(S.players.map(p => { const r = S.priv[p.id] || {}; return [pidOf(p.id), p.name, p.age, p.village, roleLabel(p.role), p.teamName, p.soldPrice, r.mobile, r.tshirt, ps(p)]; }));
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.map(r => r.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv;charset=utf-8" })); a.download = "JPL_players.csv"; a.click(); };
+$("printBtn").onclick = () => {
+  const w = window.open(""), c = cfg();
+  w.document.write(`<html><head><meta charset="utf-8"><title>Auction Sheet</title><style>body{font-family:sans-serif}table{border-collapse:collapse;width:100%}td,th{border:1px solid #333;padding:6px;font-size:13px}img{width:44px;height:44px;object-fit:cover}</style></head><body><h2>Mini JPL – Official Auction Sheet</h2><p>Base Price: ${rupee(c.basePrice)}</p><table><tr><th>#</th><th></th><th>ID</th><th>Name</th><th>Village</th><th>Role</th><th>Base</th><th>Sold To</th><th>Final Price</th></tr>${approved().map((p, i) => `<tr><td>${i + 1}</td><td><img src="${p.photo}"></td><td>${pidOf(p.id)}</td><td>${esc(p.name)}</td><td>${esc(p.village || "")}</td><td>${roleLabel(p.role)}</td><td>${rupee(c.basePrice)}</td><td>${esc(p.teamName || "")}</td><td>${p.soldPrice ? rupee(p.soldPrice) : ""}</td></tr>`).join("")}</table></body></html>`);
+  w.document.close(); setTimeout(() => w.print(), 400); };
+
+// ================= AUCTION =================
+const slots = t => cfg().squadSize - S.players.filter(p => p.teamId === t.id).length;
+const maxBid = t => { const s = slots(t); return s <= 0 ? 0 : t.purse - (s - 1) * cfg().basePrice; };
+const aucOn = () => !!S.settings.auctionOn;
+$("aucToggle").onclick = () => setDoc(doc(db, "settings", "main"), { auctionOn: !aucOn() }, { merge: true });
+const poolList = () => approved().filter(p => !p.teamId && p.auctionStatus !== "unsold" && p.auctionStatus !== "sold" && p.id !== S.live?.playerId);
+function renderAuc() {
+  const on = aucOn(); $("aucState").innerHTML = on ? `<span style="color:var(--ok)">🟢 ${tr("ऑक्शन चालू है", "Auction is ON")}</span>` : `<span style="color:var(--bad)">🔴 ${tr("ऑक्शन बंद है", "Auction is OFF")}</span>`;
+  $("aucToggle").textContent = on ? tr("⏸ ऑक्शन बंद करें", "⏸ Turn Auction OFF") : tr("▶ ऑक्शन चालू करें", "▶ Turn Auction ON"); $("aucToggle").style.background = on ? "var(--bad)" : "var(--ok)";
+  const pool = poolList(), uns = S.players.filter(p => p.auctionStatus === "unsold");
+  $("aCounts").textContent = tr(`पूल: ${pool.length} • अनबिके: ${uns.length} • बिके: ${S.players.filter(p => p.auctionStatus === "sold").length}`, `Pool: ${pool.length} • Unsold: ${uns.length} • Sold: ${S.players.filter(p => p.auctionStatus === "sold").length}`);
+  keepSel("aPool", pool.map(p => `<option value="${p.id}">${esc(p.name)} (${roleLabel(p.role)})</option>`).join("") || `<option value="">—</option>`);
+  const l = S.live, p = l?.playerId ? S.players.find(x => x.id === l.playerId) : null, v = $("aBid")?.value || "";
+  if (!p) { $("aCtl").innerHTML = `<div style="color:var(--mut)">${tr("कोई नीलामी चालू नहीं", "No active auction")}</div>`; return; }
+  const live = l.status === "live" && on, base = l.base;
+  $("aCtl").innerHTML = `<div class="msg"><b>${esc(p.name)}</b> • ${tr("बेस", "Base")} ${rupee(base)} • ${tr("अभी", "Now")} <b style="color:var(--gold)">${rupee(l.bid)}</b> ${l.bidTeamId ? "(" + esc(teamName(l.bidTeamId)) + ")" : ""} • ${l.status}</div>
+    ${!on ? `<div class="msg" style="color:var(--bad)">${tr("ऑक्शन बंद है – पहले चालू करें", "Auction is OFF – turn it ON first")}</div>` : ""}
+    <label>${tr("बोली लगाने वाली टीम चुनें", "Select bidding team")}</label>
+    <div class="btns">${S.teams.map(t => { const mx = maxBid(t), nxt = l.bidTeamId ? l.bid + 1 : l.bid, dis = !live || mx < nxt; return `<button data-team="${t.id}" class="${selTeam === t.id ? "sel" : ""}" ${dis ? "disabled" : ""} style="font-size:14px">${esc(t.name)}<br><small>${rupee(t.purse)} • ${slots(t)} ${tr("स्लॉट", "slots")} • max ${rupee(Math.max(mx, 0))}</small></button>`; }).join("")}</div>
+    <div class="btns"><button data-inc="0" ${!live || l.bidTeamId || !selTeam ? "disabled" : ""}>${tr("बेस", "Base")}</button>${[50, 100, 200, 500].map(n => `<button data-inc="${n}" ${!live || !l.bidTeamId || !selTeam || l.bid + n > maxBid(teamOf(selTeam) || { purse: 0 }) ? "disabled" : ""}>+₹${n}</button>`).join("")}</div>
+    <div class="row"><input id="aBid" type="number" placeholder="${tr("कस्टम बोली (₹)", "Custom bid (₹)")}" value="${esc(v)}"><button class="sm" id="aBidGo" ${!live ? "disabled" : ""}>${tr("बोली लगाएं", "Place Bid")}</button></div>
+    <div class="btns"><button class="sm" id="aUndo" ${!live || !(l.history || []).length ? "disabled" : ""}>↩️ ${tr("आखिरी बोली हटाएं", "Undo Last Bid")}</button><button class="sm ok" id="aSold" ${!live || !l.bidTeamId ? "disabled" : ""}>🔨 SOLD</button><button class="sm bad" id="aUns" ${!live ? "disabled" : ""}>UNSOLD</button></div>`;
+}
+async function place(tid, amt) {
+  const l = S.live, t = teamOf(tid); if (!aucOn() || !l || l.status !== "live" || !t) return;
+  if (amt < (l.bidTeamId ? l.bid + 1 : l.base)) { alert(tr("बोली पिछली बोली से ज़्यादा होनी चाहिए", "Bid must be higher than current")); return; }
+  if (amt > maxBid(t)) { alert(tr("टीम का पर्स/स्क्वाड सीमा पार – बोली नहीं हो सकती", "Exceeds team's purse / squad reserve")); return; }
+  await updateDoc(L(), { bid: amt, bidTeamId: tid, history: [...(l.history || []), { teamId: l.bidTeamId || "", bid: l.bid }], ts: Date.now() });
+}
+$("aCtl").onclick = async e => {
+  const g = a => e.target.closest(`[${a}]`)?.getAttribute(a), l = S.live;
+  if (g("data-team")) { selTeam = g("data-team"); renderAuc(); }
+  else if (g("data-inc") !== null && e.target.closest("[data-inc]")) { const n = +g("data-inc"); await place(selTeam, n === 0 ? l.base : l.bid + n); }
+  else if (e.target.id === "aBidGo") { const v = +$("aBid").value; if (!selTeam) { alert(tr("पहले टीम चुनें", "Select a team first")); return; } await place(selTeam, v); $("aBid").value = ""; }
+  else if (e.target.closest("#aUndo")) { const h = [...(l.history || [])], pr = h.pop(); await updateDoc(L(), { bid: pr.bid, bidTeamId: pr.teamId, history: h }); }
+  else if (e.target.closest("#aSold")) { enableSound(); gavel(); const t = teamOf(l.bidTeamId), b = writeBatch(db);
+    b.update(doc(db, "players", l.playerId), { teamId: t.id, teamName: t.name, soldPrice: l.bid, auctionStatus: "sold" }); b.update(doc(db, "teams", t.id), { purse: increment(-l.bid) });
+    b.update(L(), { status: "sold", soldAt: Date.now() }); await b.commit(); confetti(2500); selTeam = ""; }
+  else if (e.target.closest("#aUns")) { const b = writeBatch(db); b.update(doc(db, "players", l.playerId), { auctionStatus: "unsold" }); b.update(L(), { status: "unsold", soldAt: Date.now() }); await b.commit(); selTeam = ""; }
+};
+async function startAuc(pid) { if (!aucOn()) { alert(tr("पहले ऑक्शन चालू करें", "Turn the auction ON first")); return; } if (!pid) return; const base = cfg().basePrice;
+  await setDoc(L(), { playerId: pid, base, bid: base, bidTeamId: "", history: [], status: "live", ts: Date.now() }); selTeam = ""; }
+$("aStart").onclick = () => startAuc($("aPool").value);
+$("aRandom").onclick = () => { const p = poolList(); if (p.length) startAuc(p[Math.floor(Math.random() * p.length)].id); };
+$("aClear").onclick = () => deleteDoc(L());
+$("aReauc").onclick = async () => { const u = S.players.filter(p => p.auctionStatus === "unsold"); if (!u.length) return; const b = writeBatch(db); u.forEach(p => b.update(doc(db, "players", p.id), { auctionStatus: "pool" })); await b.commit(); };
+
+// ================= SCORING =================
+function renderScore() {
+  keepSel("scMatch", S.matches.map(m => `<option value="${m.id}">${esc(teamLabel(m, "a"))} vs ${esc(teamLabel(m, "b"))} (${stageLabel(m.stage)})</option>`).join(""));
+  const m = S.matches.find(x => x.id === $("scMatch").value); if (!m) { $("scInfo").innerHTML = ""; return; }
+  keepSel("scBat", [[m.aTeamId, teamLabel(m, "a")], [m.bTeamId, teamLabel(m, "b")]].filter(x => x[0]).map(x => `<option value="${x[0]}">${esc(x[1])}</option>`).join(""));
+  const inn = innings(m.id);
+  if (!$("scBat").dataset.u) { const k = +$("scInn").value; if (k === 2 && inn[1]) $("scBat").value = inn[1].teamId === m.aTeamId ? m.bTeamId : m.aTeamId; }
+  const bt = $("scBat").value, bw = bt === m.aTeamId ? m.bTeamId : m.aTeamId, opt = id => S.players.filter(p => p.teamId === id).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join("") || `<option value="">—</option>`;
+  keepSel("scBatter", opt(bt)); keepSel("scBowler", opt(bw));
+  const li = liveInfo(m), k = +$("scInn").value, cur = innings(m.id)[k], bl = S.balls.filter(b => b.matchId === m.id && (b.inn || 1) === k).sort((a, b) => (a.t || 0) - (b.t || 0));
+  $("scInfo").innerHTML = (cur ? `<div class="msg"><b>${esc(teamName(cur.teamId))}</b> <span class="score">${cur.runs}/${cur.wkts}</span> (${oversOf(cur.legal)}/${m.overs || cfg().overs}) • CRR ${cur.legal ? (cur.runs / (cur.legal / 6)).toFixed(2) : "0.00"}${k === 2 && li.target ? ` • ${tr("लक्ष्य", "Target")} ${li.target} • RRR ${li.rrr != null ? li.rrr.toFixed(2) : "—"}` : ""}</div>` : "")
+    + (li.complete && li.cur === k ? `<div class="msg" style="color:var(--gold)">⚠️ ${tr("पारी पूरी हो चुकी है", "Innings complete")}</div>` : "") + `<div style="margin-top:6px">${chipsHTML(bl.slice(-12))}</div>`
+    + bl.slice(-5).reverse().map(b => `<div class="msg">${esc(commentary(b))}</div>`).join("") + (m.status === "done" ? `<div class="msg" style="color:var(--ok)">🏆 ${esc(resultText(m))}</div>` : "");
+}
+["scMatch", "scInn"].forEach(i => $(i).addEventListener("change", () => { $("scBat").dataset.u = ""; renderScore(); }));
+$("scBat").addEventListener("change", () => { $("scBat").dataset.u = 1; renderScore(); });
+$("scBtns").onclick = async e => {
+  const b = e.target.closest("button"); if (!b) return; const m = S.matches.find(x => x.id === $("scMatch").value);
+  if (!m || !$("scBatter").value || !$("scBowler").value) { alert(tr("मैच, बल्लेबाज और गेंदबाज चुनें", "Select match, striker and bowler")); return; }
+  const d = { matchId: m.id, inn: +$("scInn").value, batTeamId: $("scBat").value, batterId: $("scBatter").value, bowlerId: $("scBowler").value, runs: 0, extra: "", extraRuns: 0, wicket: false, dismissal: "", cmi: randomCmi(), note: $("scNote").value.trim(), t: Date.now(), createdAt: serverTimestamp() };
+  if (b.dataset.r) d.runs = +b.dataset.r; if (b.dataset.x) { d.extra = b.dataset.x; d.extraRuns = 1; } if (b.dataset.w) { d.wicket = true; d.dismissal = $("scDis").value; }
+  await addDoc(collection(db, "balls"), d); if (m.status !== "live" && m.status !== "done") await updateDoc(doc(db, "matches", m.id), { status: "live" }); $("scNote").value = "";
+};
+$("scUndo").onclick = async () => { const last = S.balls.filter(b => b.matchId === $("scMatch").value).sort((a, b) => (a.t || 0) - (b.t || 0)).pop(); if (last && confirm(tr("आखिरी बॉल हटाएं?", "Undo last ball?"))) await deleteDoc(doc(db, "balls", last.id)); };
+$("scFinish").onclick = async () => { const m = S.matches.find(x => x.id === $("scMatch").value); if (!m) return; const r = computeResult(m); if (!r) { alert(tr("दोनों पारियाँ दर्ज करें", "Score both innings first")); return; }
+  await updateDoc(doc(db, "matches", m.id), { status: "done", winnerId: r.winnerId, res: r.res, result: "" }); };
+
+// ================= MATCHES =================
+const pad = n => String(n).padStart(2, "0"), toLocal = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const groundOpts = sel => `<option value="">—</option>` + S.grounds.map(g => `<option value="${g.id}" ${g.id === sel ? "selected" : ""}>${esc(g.name)}</option>`).join("");
+const teamOpts = sel => `<option value="">${tr("तय नहीं", "TBD")}</option>` + S.teams.map(t => `<option value="${t.id}" ${t.id === sel ? "selected" : ""}>${esc(t.name)}</option>`).join("");
+function renderMatches() {
+  if (!$("genTeams").dataset.n || +$("genTeams").dataset.n !== S.teams.length) { $("genTeams").dataset.n = S.teams.length; $("genTeams").innerHTML = S.teams.map(t => `<label style="display:inline-flex;gap:6px;margin-right:12px"><input type="checkbox" class="gt" value="${t.id}" checked> ${esc(t.name)}</label>`).join("") || "—"; }
+  keepSel("genGround", groundOpts("")); if (!$("genOvers").value) $("genOvers").value = cfg().overs;
+  if (document.activeElement && $("mList").contains(document.activeElement)) return;
+  $("mList").innerHTML = S.matches.map(m => `<div class="msg" data-m="${m.id}"><span class="tag role">${stageLabel(m.stage)}</span> ${m.status === "live" ? '<span class="tag livebadge">LIVE</span>' : m.status === "done" ? '<span class="tag paid">DONE</span>' : ""} ${m.status === "done" ? esc(resultText(m)) : ""}
+    <div class="row"><select data-f="a">${teamOpts(m.aTeamId)}</select><select data-f="b">${teamOpts(m.bTeamId)}</select></div>
+    <div class="row3"><input type="datetime-local" data-f="w" value="${esc(m.whenISO || "")}"><select data-f="g">${groundOpts(m.groundId)}</select><input type="number" data-f="o" value="${m.overs || ""}" placeholder="${tr("ओवर", "Overs")}"></div>
+    <div class="btns"><button class="sm ok" data-act="save">${tr("सेव", "Save")}</button><button class="sm" data-act="poster">🖼 ${tr("पोस्टर", "Poster")}</button><button class="sm" data-act="poll">🎯 ${tr("पोल", "Poll")}</button><button class="sm" data-act="del">🗑</button></div></div>`).join("") || `<div>${tr("अभी कोई मैच नहीं", "No matches yet")}</div>`;
+}
+$("mList").onclick = async e => {
+  const act = e.target.closest("[data-act]")?.dataset.act, box = e.target.closest("[data-m]"); if (!act || !box) return;
+  const m = S.matches.find(x => x.id === box.dataset.m), q = f => box.querySelector(`[data-f=${f}]`).value;
+  if (act === "del") return delDoc("matches", m.id);
+  if (act === "save") { const a = teamOf(q("a")), b = teamOf(q("b")), g = S.grounds.find(x => x.id === q("g"));
+    await updateDoc(doc(db, "matches", m.id), { aTeamId: a?.id || "", bTeamId: b?.id || "", aName: a?.name || "", bName: b?.name || "", whenISO: q("w"), groundId: g?.id || "", groundName: g?.name || "", overs: +q("o") || 0 }); }
+  if (act === "poster") { openModal(`<canvas id="pcv" style="max-width:100%;border-radius:10px"></canvas><div class="row"><button class="pri" id="pDl">⬇️ PNG</button><button class="pri wa" id="pSh">WhatsApp</button></div>`); await drawMatchPoster($("pcv"), m);
+    $("pDl").onclick = () => downloadCanvas($("pcv"), "JPL_match_poster.png"); $("pSh").onclick = () => shareCanvas($("pcv"), "JPL_match_poster.png", `🏏 Mini JPL — ${teamLabel(m, "a")} vs ${teamLabel(m, "b")}\n${fmtWhen(m)} ${m.groundName || ""}`); }
+  if (act === "poll") { if (!m.aTeamId || !m.bTeamId) { alert(tr("पहले दोनों टीमें तय करें", "Set both teams first")); return; }
+    await addDoc(collection(db, "polls"), { qHi: `आज कौन सी टीम जीतेगी? ${teamName(m.aTeamId)} vs ${teamName(m.bTeamId)}`, qEn: `Who will win today's match? ${teamName(m.aTeamId)} vs ${teamName(m.bTeamId)}`, labels: [teamName(m.aTeamId), teamName(m.bTeamId)], counts: {}, open: true, matchId: m.id, createdAt: serverTimestamp(), t: Date.now() }); alert("✅"); }
+};
+function roundRobin(ids) { const a = [...ids]; if (a.length % 2) a.push(null); const n = a.length, out = []; for (let r = 0; r < n - 1; r++) { for (let i = 0; i < n / 2; i++) { const x = a[i], y = a[n - 1 - i]; if (x && y) out.push([x, y]); } a.splice(1, 0, a.pop()); } return out; }
+$("genBtn").onclick = () => {
+  const ids = [...document.querySelectorAll(".gt:checked")].map(c => c.value); if (ids.length < 2) { alert(tr("कम से कम 2 टीमें चुनें", "Select at least 2 teams")); return; }
+  const fx = roundRobin(ids).map(([a, b]) => ({ stage: "league", aTeamId: a, bTeamId: b, aLabel: "", bLabel: "" }));
+  if ($("genSemi").checked) { if (ids.length >= 4) fx.push({ stage: "semi", aTeamId: "", bTeamId: "", aLabel: "#1", bLabel: "#4" }, { stage: "semi", aTeamId: "", bTeamId: "", aLabel: "#2", bLabel: "#3" }, { stage: "final", aTeamId: "", bTeamId: "", aLabel: "W-SF1", bLabel: "W-SF2" }); else fx.push({ stage: "final", aTeamId: "", bTeamId: "", aLabel: "#1", bLabel: "#2" }); }
+  const start = $("genStart").value ? new Date($("genStart").value) : null, gap = (+$("genGap").value || 2) * 3600000;
+  genPlan = fx.map((f, i) => ({ ...f, whenISO: start ? toLocal(new Date(start.getTime() + i * gap)) : "", groundId: $("genGround").value, overs: +$("genOvers").value || cfg().overs }));
+  $("genPreview").innerHTML = `<div class="tw"><table><tr><th>#</th><th>${tr("स्टेज", "Stage")}</th><th>${tr("मैच", "Match")}</th><th>${tr("तारीख/समय", "Date/Time")}</th><th>${tr("ग्राउंड", "Ground")}</th></tr>${genPlan.map((f, i) => `<tr><td>${i + 1}</td><td>${stageLabel(f.stage)}</td><td>${esc(f.aTeamId ? teamName(f.aTeamId) : f.aLabel)} vs ${esc(f.bTeamId ? teamName(f.bTeamId) : f.bLabel)}</td><td><input type="datetime-local" data-gi="${i}" data-gf="w" value="${f.whenISO}"></td><td><select data-gi="${i}" data-gf="g">${groundOpts(f.groundId)}</select></td></tr>`).join("")}</table></div><button class="pri" id="genSave">${tr("शेड्यूल सेव करें", "Save Schedule")} (${genPlan.length})</button>`;
+  $("genSave").onclick = saveSchedule; applyLang();
+};
+$("genPreview").addEventListener("change", e => { const i = e.target.dataset.gi; if (i == null) return; if (e.target.dataset.gf === "w") genPlan[i].whenISO = e.target.value; else genPlan[i].groundId = e.target.value; });
+async function saveSchedule() {
+  const b = writeBatch(db), base = Date.now();
+  genPlan.forEach((f, i) => { const a = teamOf(f.aTeamId), t = teamOf(f.bTeamId), g = S.grounds.find(x => x.id === f.groundId);
+    b.set(doc(collection(db, "matches")), { ...f, aName: a?.name || "", bName: t?.name || "", groundName: g?.name || "", status: "upcoming", result: "", seq: base + i, t: base + i, createdAt: serverTimestamp() }); });
+  await b.commit(); genPlan = []; $("genPreview").innerHTML = `<div class="msg">✅ ${tr("शेड्यूल सेव हो गया", "Schedule saved")}</div>`;
+}
+$("fillSemi").onclick = async () => { const st = standings(), sm = S.matches.filter(m => m.stage === "semi"); if (st.length < 4 || sm.length < 2) { alert(tr("कम से कम 4 टीमें और 2 सेमी-फाइनल चाहिए", "Need 4 teams and 2 semi-finals")); return; }
+  const set = (m, a, b) => updateDoc(doc(db, "matches", m.id), { aTeamId: a.t.id, bTeamId: b.t.id, aName: a.t.name, bName: b.t.name }); await set(sm[0], st[0], st[3]); await set(sm[1], st[1], st[2]); };
+$("fillFinal").onclick = async () => { const sm = S.matches.filter(m => m.stage === "semi"), f = S.matches.find(m => m.stage === "final"); if (!f || sm.length < 2 || sm.some(m => !m.winnerId)) { alert(tr("दोनों सेमी-फाइनल पूरे होने चाहिए", "Both semi-finals must be finished")); return; }
+  await updateDoc(doc(db, "matches", f.id), { aTeamId: sm[0].winnerId, bTeamId: sm[1].winnerId, aName: teamName(sm[0].winnerId), bName: teamName(sm[1].winnerId) }); };
+$("mDelAll").onclick = async () => { if (!confirm(tr("सभी मैच हटाएं?", "Delete ALL matches?"))) return; const b = writeBatch(db); S.matches.forEach(m => b.delete(doc(db, "matches", m.id))); await b.commit(); };
+
+// ================= TEAMS =================
+function renderTeams() {
+  keepSel("tmCoach", `<option value="">—</option>` + S.coaches.map(c => `<option>${esc(c.name)}</option>`).join(""));
+  if (!$("tmPurse").value) $("tmPurse").placeholder = cfg().purse;
+  $("tmList").innerHTML = S.teams.map(t => `<div class="msg" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${logo(t, 44)}<div style="flex:1"><b>${esc(t.name)}</b><br><small>${tr("कप्तान", "Captain")}: ${esc(t.captain || "—")} • ${tr("कोच", "Coach")}: ${esc(t.coach || "—")} • ${tr("मालिक", "Owner")}: ${esc(t.ownerName || "—")} ${esc(t.ownerEmail || "")} • ${tr("पर्स", "Purse")}: ${rupee(t.purse)}</small></div>
+    <button class="sm" data-purse="${t.id}">${tr("पर्स", "Purse")}</button><button class="sm" data-del="${t.id}">🗑</button></div>`).join("") || "—";
+}
+$("tmAdd").onclick = async () => {
+  const name = $("tmName").value.trim(); if (!name) return; const f = $("tmLogo").files[0], lg = f ? await compress(f, 300, .9, "image/png") : "", email = $("tmOwner").value.trim().toLowerCase();
+  const r = await addDoc(collection(db, "teams"), { name, captain: $("tmCap").value.trim(), coach: $("tmCoach").value, ownerName: $("tmOwnerName").value.trim(), ownerEmail: email, logo: lg, purse: +$("tmPurse").value || cfg().purse, createdAt: serverTimestamp(), t: Date.now() });
+  if (email) await setDoc(doc(db, "owners", email), { teamId: r.id }); ["tmName", "tmCap", "tmOwnerName", "tmOwner", "tmPurse", "tmLogo"].forEach(i => $(i).value = "");
+};
+$("tmList").onclick = async e => { const p = e.target.closest("[data-purse]")?.dataset.purse, d = e.target.closest("[data-del]")?.dataset.del;
+  if (p) { const v = prompt(tr("नया पर्स (₹)", "New purse (₹)")); if (v !== null && v !== "" && !isNaN(+v)) await updateDoc(doc(db, "teams", p), { purse: +v }); }
+  if (d) { const t = teamOf(d); if (confirm(tr("टीम हटाएं?", "Delete team?"))) { await deleteDoc(doc(db, "teams", d)); if (t?.ownerEmail) await deleteDoc(doc(db, "owners", t.ownerEmail)); } } };
+
+// ================= MEDIA =================
+function renderMedia() {
+  if (document.activeElement && ["spName", "nwText", "pQ", "pOpts"].includes(document.activeElement.id)) return;
+  $("spList").innerHTML = S.sponsors.map(s => `<div class="msg"><img src="${s.logo}" style="height:36px;vertical-align:middle;background:#fff;border-radius:4px"> ${esc(s.name)} <span class="tag role">${s.tier === "title" ? tr("टाइटल", "Title") : tr("को-स्पॉन्सर", "Co-sponsor")}</span> <button class="sm" data-d="sponsors|${s.id}">🗑</button></div>`).join("");
+  $("nwList").innerHTML = S.news.map(n => `<div class="msg">${esc(n.text)} <button class="sm" data-d="news|${n.id}">🗑</button></div>`).join("");
+  $("pList").innerHTML = S.polls.map(p => `<div class="msg">${esc(p.qHi || p.question || "")} ${p.open === false ? '<span class="tag rej">CLOSED</span>' : ""} <button class="sm" data-tg="${p.id}">${p.open === false ? tr("खोलें", "Open") : tr("बंद", "Close")}</button><button class="sm" data-d="polls|${p.id}">🗑</button></div>`).join("");
+  const pend = S.media.filter(m => m.status === "pending"), ok = S.media.filter(m => m.status !== "pending" && m.status !== "rejected");
+  const card = (m, pending) => `<div class="msg">${m.kind === "video" ? `<a href="${esc(m.url)}" target="_blank">🎬 ${esc(m.url)}</a>` : `<img class="th" src="${m.src}">`} ${esc(m.caption)} ${pending ? `<button class="sm ok" data-ap="${m.id}">${tr("Approve", "Approve")}</button><button class="sm bad" data-d="media|${m.id}">${tr("Reject", "Reject")}</button>` : `<button class="sm" data-d="media|${m.id}">🗑</button>`}</div>`;
+  $("gPending").innerHTML = pend.map(m => card(m, true)).join("") || "—"; $("gApproved").innerHTML = ok.map(m => card(m, false)).join("") || "—";
+}
+$("tMedia").onclick = async e => { const d = e.target.closest("[data-d]")?.dataset.d, ap = e.target.closest("[data-ap]")?.dataset.ap, tg = e.target.closest("[data-tg]")?.dataset.tg;
+  if (d) { const [c, id] = d.split("|"); await delDoc(c, id); } if (ap) await updateDoc(doc(db, "media", ap), { status: "approved" });
+  if (tg) await updateDoc(doc(db, "polls", tg), { open: S.polls.find(p => p.id === tg).open === false }); };
+$("spAdd").onclick = async () => { const f = $("spLogo").files[0], n = $("spName").value.trim(); if (!f || !n) { alert(tr("नाम और लोगो चुनें", "Enter name and logo")); return; }
+  await addDoc(collection(db, "sponsors"), { name: n, tier: $("spTier").value, logo: await compress(f, 400, .9, "image/png"), createdAt: serverTimestamp(), t: Date.now() }); $("spName").value = ""; $("spLogo").value = ""; };
+$("nwAdd").onclick = async () => { const t = $("nwText").value.trim(); if (t) { await addDoc(collection(db, "news"), { text: t, createdAt: serverTimestamp(), t: Date.now() }); $("nwText").value = ""; } };
+$("pAdd").onclick = async () => { const l = $("pOpts").value.split(",").map(s => s.trim()).filter(Boolean), q = $("pQ").value.trim(); if (!q || l.length < 2) { alert(tr("सवाल व कम से कम 2 विकल्प", "Question and at least 2 options")); return; }
+  await addDoc(collection(db, "polls"), { question: q, labels: l, counts: {}, open: true, createdAt: serverTimestamp(), t: Date.now() }); $("pQ").value = ""; $("pOpts").value = ""; };
+
+// ================= SETTINGS =================
+function renderSettings() {
+  const c = cfg(), s = S.settings, set = (id, v) => { if (document.activeElement !== $(id)) $(id).value = v ?? ""; };
+  set("setEntry", s.entryFee || ""); set("setUpi", s.upiId); set("setUpiName", s.upiName); set("setWa", s.adminWa || c.adminWa); set("setDate", s.startDate); set("setPurse", s.purse || ""); set("setBase", s.basePrice || ""); set("setSquad", s.squadSize || ""); set("setOvers", s.overs || ""); set("setWk", s.wicketsLimit || "");
+  $("gList").innerHTML = S.grounds.map(g => `<div class="msg">${esc(g.name)} – ${esc(g.addr || "")} <button class="sm" data-d="grounds|${g.id}">🗑</button></div>`).join("");
+  $("cList").innerHTML = S.coaches.map(x => `<div class="msg">${esc(x.name)} ${esc(x.phone || "")} <button class="sm" data-d="coaches|${x.id}">🗑</button></div>`).join("");
+}
+$("tSettings").onclick = e => { const d = e.target.closest("[data-d]")?.dataset.d; if (d) { const [c, id] = d.split("|"); delDoc(c, id); } };
+$("setSave").onclick = async () => {
+  const d = { entryFee: +$("setEntry").value || 0, upiId: $("setUpi").value.trim(), upiName: $("setUpiName").value.trim(), adminWa: $("setWa").value.trim(), startDate: $("setDate").value, purse: +$("setPurse").value || 0, basePrice: +$("setBase").value || 0, squadSize: +$("setSquad").value || 0, overs: +$("setOvers").value || 0, wicketsLimit: +$("setWk").value || 0 };
+  if ($("setQr").files[0]) d.qrImg = await compress($("setQr").files[0], 500, .9, "image/png");
+  await setDoc(doc(db, "settings", "main"), d, { merge: true }); $("setMsg").innerHTML = `<div class="msg">✅ ${tr("सेव हो गया", "Saved")}</div>`; };
+$("gAdd").onclick = async () => { if ($("gName").value.trim()) { await addDoc(collection(db, "grounds"), { name: $("gName").value.trim(), addr: $("gAddr").value.trim() }); $("gName").value = ""; $("gAddr").value = ""; } };
+$("gDefault").onclick = async () => { for (const [n, a] of [["Porsa Ground", "Porsa"], ["Jotai Ground", "Jotai"]]) if (!S.grounds.some(g => g.name === n)) await addDoc(collection(db, "grounds"), { name: n, addr: a }); };
+$("cAdd").onclick = async () => { if ($("cName").value.trim()) { await addDoc(collection(db, "coaches"), { name: $("cName").value.trim(), phone: $("cPhone").value.trim() }); $("cName").value = ""; $("cPhone").value = ""; } };
+$("cSubodh").onclick = async () => { if (!S.coaches.some(c => c.name === "सुबोध")) await addDoc(collection(db, "coaches"), { name: "सुबोध", phone: "" }); };
+
+// ================= SCANNER =================
+let stream = null, timer = null;
+const stopScan = () => { clearInterval(timer); stream?.getTracks().forEach(t => t.stop()); stream = null; };
+$("scanStop").onclick = stopScan;
+$("scanStart").onclick = async () => {
+  if (!("BarcodeDetector" in window)) { $("scanRes").innerHTML = `<div class="msg">${tr("इस ब्राउज़र में QR स्कैनर नहीं – ऊपर ID डालकर चेक करें", "QR scanning unsupported here – type the ID above")}</div>`; return; }
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); const v = $("scanVid"); v.srcObject = stream; await v.play(); const det = new BarcodeDetector({ formats: ["qr_code"] });
+    timer = setInterval(async () => { const c = await det.detect(v); if (c.length) { const r = c[0].rawValue; stopScan(); show(r.includes("p=") ? r.split("p=")[1].split("&")[0] : r); } }, 500);
+  } catch (e) { $("scanRes").innerHTML = `<div class="msg">${esc(e.message)}</div>`; }
+};
+$("scanManual").onclick = () => { const raw = $("scanId").value.trim(), p = S.players.find(x => pidOf(x.id) === raw.toUpperCase()) || S.players.find(x => x.id === raw); show(p ? p.id : raw); };
+function show(id) { const p = S.players.find(x => x.id === id), pr = S.priv[id] || {};
+  $("scanRes").innerHTML = p ? `<div class="msg"><img class="th" src="${p.photo}"> <b>${esc(p.name)}</b> • ${roleLabel(p.role)} • ${esc(p.village || "")} • ${esc(p.teamName || "—")}<br>${pidOf(p.id)} • ${esc(pr.mobile || "")}<br>${ps(p) === "paid" ? `<span class="tag paid">✅ ${tr("पेमेंट अप्रूव्ड – अंदर आने दें", "Payment approved – allow entry")}</span>` : ps(p) === "rejected" ? `<span class="tag rej">❌ ${tr("रिजेक्टेड", "Rejected")}</span>` : `<span class="tag pend">⏳ ${tr("पेंडिंग – पहले वेरिफाई करें", "Pending – verify first")}</span>`}</div>` : `<div class="msg">❌ ${tr("खिलाड़ी नहीं मिला", "Player not found")}</div>`; }
+applyLang();
+</script>
+</body>
+</html>
